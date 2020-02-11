@@ -131,7 +131,9 @@ public class FachadaEscalonador {
 	
 	public void adicionarProcesso(String nomeProcesso, int prioridade) {
 		
-		if (tipoEscalonador == TipoEscalonador.RoundRobin) throw new EscalonadorException();	
+		if (tipoEscalonador == TipoEscalonador.RoundRobin || tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) throw new EscalonadorException();
+		else if (tipoEscalonador == TipoEscalonador.Prioridade) {
+			this.listaProcessos.add(nomeProcesso);	
 	}
 	public void finalizarProcesso(String nomeProcesso) {
 		
