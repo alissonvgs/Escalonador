@@ -1,138 +1,75 @@
 package br.ufpb.dcx.aps.escalonador;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
 public class FachadaEscalonador {
-
-	private TipoEscalonador tipoEscalonador;
+	
+	protected TipoEscalonador tipoEscalonador;
 	private int tick;
-	private int quantum;
-	private int controlador;
+	protected int quantum;
+	protected int controlador;
+	
+	protected String rodando;
+	protected String processoFinalizado;
+	protected String processoBloqueado;
+	protected String processoRetomado;
+	
+	protected ArrayList<String> processosBloqueados;
+	protected Queue<String> listaProcessos; // Queue add um elemento na lista atravez o modo FIFO
+	protected List<String> fila = new ArrayList<String>();
+	protected List<String> processosRetomados = new ArrayList<String>();
 
-	private String rodando;
-	private String processoFinalizado;
-	private String processoBloqueado;
-	private String processoRetomado;
-
-	private String rodandoPrioridade;
-	private int prioridade;
-
-	// Prioridade Lists
-	private List<String> filaPrioridade = new ArrayList<String>();
-	private List<String> listaProcessosPrioridade = new ArrayList<String>();
-
-	// RoundRobin Lists
-	private ArrayList<String> processosBloqueados;
-	private Queue<String> listaProcessos;
-	private List<String> fila = new ArrayList<String>();
-	private List<String> processosRetomados = new ArrayList<String>();
-
-	public FachadaEscalonador(TipoEscalonador tipoEscalonador) {
-
-		if (tipoEscalonador == null)
-			throw new EscalonadorException();
+	public FachadaEscalonador( TipoEscalonador tipoEscalonador ){
+		
+		if( tipoEscalonador == null ) throw new EscalonadorException();	
 		this.quantum = 3;
 		this.tick = 0;
 		this.tipoEscalonador = tipoEscalonador;
 		this.listaProcessos = new LinkedList<String>();
 		this.processosBloqueados = new ArrayList<String>();
 	}
-
-	public FachadaEscalonador(TipoEscalonador roundrobin, int quantum) {
-
-		if (quantum <= 0)
-			throw new EscalonadorException();
+	public FachadaEscalonador( TipoEscalonador roundrobin, int quantum ) {
+		
+		if(quantum <= 0) throw new EscalonadorException();
 		this.quantum = quantum;
 		this.tick = 0;
 		this.tipoEscalonador = roundrobin;
 		this.listaProcessos = new LinkedList<String>();
 		this.processosBloqueados = new ArrayList<String>();
-	}
-
-	public FachadaEscalonador(TipoEscalonador Prioridade, int quantum, int prioridade) {
-
-		if (quantum <= 0)
-			throw new EscalonadorException();
-		this.quantum = quantum;
-		this.tick = 0;
-		this.prioridade = prioridade;
-		this.tipoEscalonador = Prioridade;
-		this.listaProcessosPrioridade = new LinkedList<String>();
-		this.processosBloqueados = new ArrayList<String>();
-	}
-
+	}	
 	public String getStatus() {
 
-////////////////////////////////////////////ROUNDROBIN/////////////////////////////////
+		System.err.println("getstauts >");
 
-		if (tipoEscalonador == TipoEscalonador.RoundRobin) {
+		String resultado = "Escalonador " + this.tipoEscalonador + ";";
+		resultado += "Processos: {";
+		if (rodando != null)
+			resultado += "Rodando: " + this.rodando;
+		if (listaProcessos.size() > 0 || fila.size() > 0) {
 
-			String resultado = "Escalonador " + this.tipoEscalonador + ";";
-			resultado += "Processos: {";
 			if (rodando != null)
-				resultado += "Rodando: " + this.rodando;
-			if (listaProcessos.size() > 0 || fila.size() > 0) {
-
-				if (rodando != null)
-					resultado += ", ";
-				if (fila.size() > 0) {
-					resultado += "Fila: " + this.fila.toString();
-				} else {
-					resultado += "Fila: " + this.listaProcessos.toString();
-				}
+				resultado += ", ";
+			if (fila.size() > 0) {
+				resultado += "Fila: " + this.fila.toString();
+			} else {
+				resultado += "Fila: " + this.listaProcessos.toString();
 			}
-			if (this.processosBloqueados.size() > 0) {
-
-				if (rodando != null || listaProcessos.size() > 0)
-					resultado += ", ";
-				resultado += "Bloqueados: " + this.processosBloqueados.toString();
-			}
-
-			resultado += "};Quantum: " + this.quantum + ";";
-			resultado += "Tick: " + this.tick;
-			return resultado;
-
-//////////////////////////PRIORIDADE//////////////////////////////////////////////////
-
-		} else if (tipoEscalonador == TipoEscalonador.Prioridade) {
-
-			String resultado = "Escalonador " + this.tipoEscalonador + ";";
-			resultado += "Processos: {";
-			if (rodandoPrioridade != null)
-				resultado += "Rodando: " + this.rodandoPrioridade;
-			if (listaProcessosPrioridade.size() > 0 || filaPrioridade.size() > 0) {
-
-				if (rodandoPrioridade != null)
-					resultado += ", ";
-				if (filaPrioridade.size() > 0) {
-					System.err.println(filaPrioridade);
-					resultado += "Fila: " + this.filaPrioridade.toString();
-				} else {
-					resultado += "Fila: " + this.listaProcessosPrioridade.toString();
-				}
-			}
-			if (this.processosBloqueados.size() > 0) {
-
-				if (rodandoPrioridade != null || listaProcessosPrioridade.size() > 0)
-					resultado += ", ";
-				resultado += "Bloqueados: " + this.processosBloqueados.toString();
-			}
-
-			resultado += "};Quantum: " + this.quantum + ";";
-			resultado += "Tick: " + this.tick;
-			System.out.println(resultado);
-			return resultado;
-
-		} else {
-			return null;
 		}
+		if (this.processosBloqueados.size() > 0) {
+			
+			if (rodando != null || listaProcessos.size() > 0) resultado += ", ";
+			resultado += "Bloqueados: " + this.processosBloqueados.toString();
+		}
+		
+		resultado += "};Quantum: " + this.quantum + ";";
+		resultado += "Tick: " + this.tick;
+		System.out.println(resultado);
+		return resultado;
 	}
-
 	public void tick() {
-
+		
 		this.tick++;
 		if (this.controlador > 0 && (this.controlador + this.quantum) == this.tick) {
 			this.listaProcessos.add(rodando);
@@ -146,27 +83,13 @@ public class FachadaEscalonador {
 				this.listaProcessos.remove(processoFinalizado);
 			}
 		}
-
 		if (this.rodando == null) {
-			if (tipoEscalonador == TipoEscalonador.RoundRobin) {
-				if (this.listaProcessos.size() != 0) {
-					this.rodando = this.listaProcessos.poll();
-					if (listaProcessos.size() > 0)
-						this.controlador = this.tick;
-				}
-				
-				//PRIORIDADE ABAIXO
-			} else if (tipoEscalonador == TipoEscalonador.Prioridade) {
-				if (this.listaProcessosPrioridade.size() != 0) {
-					this.rodandoPrioridade = this.listaProcessosPrioridade.get(0);
-					if (listaProcessosPrioridade.size() > 0)
-						this.controlador = this.tick;
-				}
+			if (this.listaProcessos.size() != 0) {
+				this.rodando = this.listaProcessos.poll();
+				if (listaProcessos.size() > 0) this.controlador = this.tick;			
 			}
-
 		}
-		if (this.controlador == 0 && this.rodando != null && listaProcessos.size() > 0)
-			this.controlador = this.tick;
+		if (this.controlador == 0 && this.rodando != null && listaProcessos.size() > 0) this.controlador = this.tick;
 		if (processoBloqueado != null) {
 			if (this.rodando == this.processoBloqueado) {
 				this.rodando = null;
@@ -176,7 +99,7 @@ public class FachadaEscalonador {
 				} else {
 					rodando = null;
 				}
-			}
+			} 
 			processoBloqueado = null;
 		}
 		if (processosRetomados.size() > 0) {
@@ -185,69 +108,100 @@ public class FachadaEscalonador {
 				if (processosBloqueados.contains(retomar)) {
 					if (rodando == null) {
 						rodando = retomar;
-					} else {
+					} else {				
 						this.listaProcessos.add(retomar);
 					}
 					this.processosBloqueados.remove(retomar);
-				}
+				}			
 			}
 		}
 	}
-
-	public void adicionarProcesso(String nomeProcesso) {
-
-		if (nomeProcesso == null) {
+	
+	public void adicionarProcesso( String nomeProcesso ) {
+			
+		if(nomeProcesso == null) 
 			throw new EscalonadorException();
-		}
+		
+		if(tipoEscalonador == TipoEscalonador.Prioridade) 
+			throw new EscalonadorException();
+		
+		if (tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) 
+			throw new EscalonadorException();
+		
 		if (listaProcessos.contains(nomeProcesso)) {
 			throw new EscalonadorException();
+			
 		} else {
+			
 			this.listaProcessos.add(nomeProcesso);
 		}
 	}
-
+	
 	public void adicionarProcesso(String nomeProcesso, int prioridade) {
-
-		if (tipoEscalonador == TipoEscalonador.RoundRobin)
+		
+		if (tipoEscalonador == TipoEscalonador.RoundRobin || tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) {
 			throw new EscalonadorException();
-		if (tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro)
-			throw new EscalonadorException();
-
-		this.listaProcessosPrioridade.add(nomeProcesso);
-
+			
+		} else if (tipoEscalonador == TipoEscalonador.Prioridade) {
+			
+			this.listaProcessos.add(nomeProcesso);	
+		}
+		
 	}
-
 	public void finalizarProcesso(String nomeProcesso) {
-
-		if (!listaProcessos.contains(nomeProcesso) && rodando == null) {
+		
+		if(!listaProcessos.contains(nomeProcesso) && rodando == null) {
 			throw new EscalonadorException();
-
-		} else {
+			
+		}else{
+			
 			this.processoFinalizado = nomeProcesso;
 		}
 	}
-
 	public void bloquearProcesso(String nomeProcesso) {
-		if (!listaProcessos.contains(nomeProcesso) && rodando == null) {
+		
+		if(!listaProcessos.contains(nomeProcesso) && rodando == null) 
+			
 			throw new EscalonadorException();
-		}
-		if (rodando != nomeProcesso) {
+			
+		if(rodando != nomeProcesso) {
+			
 			throw new EscalonadorException();
+			
 		} else {
 			this.processoBloqueado = nomeProcesso;
 		}
-
+		
 	}
-
 	public void retomarProcesso(String nomeProcesso) {
-		if (!processosBloqueados.contains(nomeProcesso)) {
+		if(!processosBloqueados.contains(nomeProcesso)) {
 			throw new EscalonadorException();
-		} else {
+		}else{
 			processosRetomados.add(nomeProcesso);
 		}
 	}
-
-	public void adicionarProcessoTempoFixo(String string, int duracao) {
-
+	public void adicionarProcessoTempoFixo(String nomeProcesso, int duracao) {
+		
 	}
+	
+	public TipoEscalonador getTipoEscalonador() {
+		return tipoEscalonador;
+	}
+	
+	public void setTipoEscalonador(TipoEscalonador tipoEscalonador) {
+		this.tipoEscalonador = tipoEscalonador;
+	}
+	
+	public TipoEscalonador escalonadorRoundRobin() {
+		return TipoEscalonador.RoundRobin;
+	}
+
+	public TipoEscalonador escalonadorPrioridade() {
+		return TipoEscalonador.Prioridade;
+	}
+
+	public TipoEscalonador escalonadorMaisCurtoPrimeiro() {
+		return TipoEscalonador.MaisCurtoPrimeiro;
+	}
+
 }
