@@ -119,21 +119,34 @@ public class FachadaEscalonador {
 	
 	public void adicionarProcesso( String nomeProcesso ) {
 			
-		if(nomeProcesso == null) {
+		if(nomeProcesso == null) 
 			throw new EscalonadorException();
-		}
+		
+		if(tipoEscalonador == TipoEscalonador.Prioridade) 
+			throw new EscalonadorException();
+		
+		if (tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) 
+			throw new EscalonadorException();
+		
 		if (listaProcessos.contains(nomeProcesso)) {
 			throw new EscalonadorException();
-		}else{
+			
+		} else {
+			
 			this.listaProcessos.add(nomeProcesso);
 		}
 	}
 	
 	public void adicionarProcesso(String nomeProcesso, int prioridade) {
 		
-		if (tipoEscalonador == TipoEscalonador.RoundRobin || tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) throw new EscalonadorException();
-		else if (tipoEscalonador == TipoEscalonador.Prioridade) {
+		if (tipoEscalonador == TipoEscalonador.RoundRobin || tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) {
+			throw new EscalonadorException();
+			
+		} else if (tipoEscalonador == TipoEscalonador.Prioridade) {
+			
 			this.listaProcessos.add(nomeProcesso);	
+		}
+		
 	}
 	public void finalizarProcesso(String nomeProcesso) {
 		
@@ -141,16 +154,21 @@ public class FachadaEscalonador {
 			throw new EscalonadorException();
 			
 		}else{
+			
 			this.processoFinalizado = nomeProcesso;
 		}
 	}
 	public void bloquearProcesso(String nomeProcesso) {
-		if(!listaProcessos.contains(nomeProcesso) && rodando == null) {
+		
+		if(!listaProcessos.contains(nomeProcesso) && rodando == null) 
+			
 			throw new EscalonadorException();
-		}
+			
 		if(rodando != nomeProcesso) {
+			
 			throw new EscalonadorException();
-		}else {
+			
+		} else {
 			this.processoBloqueado = nomeProcesso;
 		}
 		
@@ -162,4 +180,28 @@ public class FachadaEscalonador {
 			processosRetomados.add(nomeProcesso);
 		}
 	}
+	public void adicionarProcessoTempoFixo(String nomeProcesso, int duracao) {
+		
+	}
+	
+	public TipoEscalonador getTipoEscalonador() {
+		return tipoEscalonador;
+	}
+	
+	public void setTipoEscalonador(TipoEscalonador tipoEscalonador) {
+		this.tipoEscalonador = tipoEscalonador;
+	}
+	
+	public TipoEscalonador escalonadorRoundRobin() {
+		return TipoEscalonador.RoundRobin;
+	}
+
+	public TipoEscalonador escalonadorPrioridade() {
+		return TipoEscalonador.Prioridade;
+	}
+
+	public TipoEscalonador escalonadorMaisCurtoPrimeiro() {
+		return TipoEscalonador.MaisCurtoPrimeiro;
+	}
+
 }
