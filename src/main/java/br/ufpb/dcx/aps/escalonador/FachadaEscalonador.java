@@ -45,14 +45,18 @@ public class FachadaEscalonador {
 
 		String resultado = "Escalonador " + this.tipoEscalonador + ";";
 		resultado += "Processos: {";
+		
 		if (rodando != null)
 			resultado += "Rodando: " + this.rodando;
+		
 		if (listaProcessos.size() > 0 || fila.size() > 0) {
 
 			if (rodando != null)
 				resultado += ", ";
-			if (fila.size() > 0) {
+			
+			if (this.tipoEscalonador.equals(escalonadorMaisCurtoPrimeiro())) {
 				resultado += "Fila: " + this.fila.toString();
+
 			} else {
 				resultado += "Fila: " + this.listaProcessos.toString();
 			}
@@ -63,7 +67,12 @@ public class FachadaEscalonador {
 			resultado += "Bloqueados: " + this.processosBloqueados.toString();
 		}
 		
-		resultado += "};Quantum: " + this.quantum + ";";
+		if (this.tipoEscalonador.equals(escalonadorMaisCurtoPrimeiro())) {
+			resultado += "};Quantum: 0;";
+		} else {
+			resultado += "};Quantum: " + this.quantum + ";";
+		}
+		
 		resultado += "Tick: " + this.tick;
 		System.out.println(resultado);
 		return resultado;
