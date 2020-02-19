@@ -9,22 +9,16 @@ public class FachadaEscalonador {
 
 	protected TipoEscalonador tipoEscalonador;
 	private int tick;
-	protected int quantum;
-	protected int controlador;
-	protected int tempoRodando;
-	protected int tempoFixo;
-
-	protected String rodando;
-	protected String processoFinalizado;
-	protected String processoBloqueado;
-	protected String processoRetomado;
-
+	protected int quantum, controlador,tempoRodando,tempoFixo;
+	protected String rodando,processoFinalizado,processoBloqueado, processoRetomado;
+	
 	protected ArrayList<String> processosBloqueados;
 	protected Queue<String> listaProcessos; // Queue add um elemento na lista atravez o modo FIFO
 	protected List<String> fila = new ArrayList<String>();
 	protected List<String> processosRetomados = new ArrayList<String>();
 	protected List<Integer> filaDuracao = new ArrayList<Integer>();
 
+	
 	public FachadaEscalonador(TipoEscalonador tipoEscalonador) {
 
 		if (tipoEscalonador == null)
@@ -144,6 +138,34 @@ public class FachadaEscalonador {
 			}
 
 		}
+		if (this.tipoEscalonador.equals(escalonadorMaisCurtoPrimeiro())) {
+
+			if (fila.size() > 0) {
+
+				if (rodando == null) {
+
+					rodando = fila.remove(0);
+					tempoRodando = filaDuracao.remove(0);
+					tempoFixo = this.tick + tempoRodando;
+				}
+			}
+			if (tempoFixo == this.tick && rodando != null) {
+
+				if (fila.size() > 0) {
+
+					rodando = fila.remove(0);
+					tempoRodando = filaDuracao.remove(0);
+
+				} else {
+					rodando = null;
+					tempoRodando = 0;
+				}
+				if (tempoRodando > 0)
+					tempoFixo = tick + tempoRodando;
+
+			}
+		}	
+		
 	}
 
 	public void adicionarProcesso(String nomeProcesso) {
@@ -171,10 +193,14 @@ public class FachadaEscalonador {
 		if (tipoEscalonador == TipoEscalonador.RoundRobin || tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) {
 			throw new EscalonadorException();
 
-		} else if (tipoEscalonador == TipoEscalonador.Prioridade) {
-
-			this.listaProcessos.add(nomeProcesso);
+		}if(listaProcessos.contains(nomeProcesso) || nomeProcesso == null) {
+			throw new EscalonadorException();
 		}
+		if(prioridade > 3) {
+			throw new EscalonadorException();
+		}
+		
+		this.listaProcessos.add(nomeProcesso);
 
 	}
 
