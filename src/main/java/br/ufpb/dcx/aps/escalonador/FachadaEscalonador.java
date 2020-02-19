@@ -240,6 +240,47 @@ public class FachadaEscalonador {
 	}
 
 	public void adicionarProcessoTempoFixo(String nomeProcesso, int duracao) {
+		if (this.fila.contains(nomeProcesso) || nomeProcesso == null) 
+			throw new EscalonadorException();
+
+		if (duracao < 1) 
+			throw new EscalonadorException();
+		
+		int maisCurto = Integer.MAX_VALUE;
+
+		if (this.fila.size() == 0) {
+			
+			this.fila.add(nomeProcesso);
+			this.filaDuracao.add(duracao);
+			
+		} else {
+
+			int menorPosicao = 0;
+
+			this.fila.add(nomeProcesso);
+			this.filaDuracao.add(duracao);
+			
+			for (int i = 0; i < this.filaDuracao.size(); i++) {
+				
+				if (this.filaDuracao.get(i) < maisCurto) {
+					maisCurto = this.filaDuracao.get(i);
+					menorPosicao = i;
+				}
+			}
+			if (menorPosicao > 0) {
+				
+				String processoMenor = this.fila.remove(menorPosicao);
+				int processoMenorTempo = this.filaDuracao.remove(menorPosicao);
+				this.fila.add(0, processoMenor);
+				this.filaDuracao.add(0, processoMenorTempo);
+
+				for (int k = 0; duracao < k; k++) {
+					this.fila.add(0, nomeProcesso);
+					this.filaDuracao.add(0, duracao);
+
+				}
+			}
+		}
 
 	}
 
