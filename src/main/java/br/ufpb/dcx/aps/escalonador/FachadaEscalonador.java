@@ -21,13 +21,23 @@ public class FachadaEscalonador {
 	
 	public FachadaEscalonador(TipoEscalonador tipoEscalonador) {
 
+		if(tipoEscalonador == TipoEscalonador.Fifo) {
+			this.quantum = 0;
+			this.tick = 0;
+			this.tipoEscalonador = tipoEscalonador;
+			this.listaProcessos = new LinkedList<String>();
+			this.processosBloqueados = new ArrayList<String>();
+		}
+		
 		if (tipoEscalonador == null)
 			throw new EscalonadorException();
+		else {
 		this.quantum = 3;
 		this.tick = 0;
 		this.tipoEscalonador = tipoEscalonador;
 		this.listaProcessos = new LinkedList<String>();
 		this.processosBloqueados = new ArrayList<String>();
+		}
 	}
 
 	public FachadaEscalonador(TipoEscalonador roundrobin, int quantum) {
@@ -302,6 +312,10 @@ public class FachadaEscalonador {
 
 	public TipoEscalonador escalonadorMaisCurtoPrimeiro() {
 		return TipoEscalonador.MaisCurtoPrimeiro;
+	}
+	
+	public TipoEscalonador escalonadorFifo() {
+		return TipoEscalonador.Fifo;
 	}
 
 }
