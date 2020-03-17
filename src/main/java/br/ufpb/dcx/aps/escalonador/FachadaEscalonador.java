@@ -5,6 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import br.ufpb.dcx.aps.escalonador.comando.ComandoGetStatus;
+import br.ufpb.dcx.aps.escalonador.comando.ComandoTick;
+
 public class FachadaEscalonador {
 
 	protected TipoEscalonador tipoEscalonador;
@@ -301,15 +304,12 @@ public class FachadaEscalonador {
 	public void setTipoEscalonador(TipoEscalonador tipoEscalonador) {
 		this.tipoEscalonador = tipoEscalonador;
 	}
-
 	public TipoEscalonador escalonadorRoundRobin() {
 		return TipoEscalonador.RoundRobin;
 	}
-
 	public TipoEscalonador escalonadorPrioridade() {
 		return TipoEscalonador.Prioridade;
 	}
-
 	public TipoEscalonador escalonadorMaisCurtoPrimeiro() {
 		return TipoEscalonador.MaisCurtoPrimeiro;
 	}
@@ -317,5 +317,12 @@ public class FachadaEscalonador {
 	public TipoEscalonador escalonadorFifo() {
 		return TipoEscalonador.Fifo;
 	}
-
+	public void execute(ComandoTick comandoTick) {
+		// TODO Auto-generated method stub
+	
+	}
+	public Object execute(ComandoGetStatus comandoGetStatus) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
