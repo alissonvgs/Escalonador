@@ -11,8 +11,8 @@ public class MaisCurtoPrimeiro extends EscalonadorBase {
 		if (tipoEscalonador != TipoEscalonador.MaisCurtoPrimeiro)
 			throw new EscalonadorException();
 		
-		this.processosBloqueados = new ArrayList<>();
-		this.processosRetomados = new ArrayList<>();
+		this.processosBloqueados = new ArrayList<String>();
+		this.processosRetomados = new ArrayList<String>();
 		this.fila = new ArrayList<>();
 		this.quantum = 0;
 		this.tipoEscalonador = TipoEscalonador.MaisCurtoPrimeiro;

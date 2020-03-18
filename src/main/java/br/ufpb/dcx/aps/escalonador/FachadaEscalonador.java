@@ -12,34 +12,34 @@ public class FachadaEscalonador {
 
 	protected TipoEscalonador tipoEscalonador;
 	private int tick;
-	protected int quantum, controlador,tempoRodando,tempoFixo;
-	protected String rodando,processoFinalizado,processoBloqueado, processoRetomado;
-	
+	protected int quantum, controlador, tempoRodando, tempoFixo;
+	protected String rodando, processoFinalizado, processoBloqueado, processoRetomado;
+
 	protected ArrayList<String> processosBloqueados;
 	protected Queue<String> listaProcessos; // Queue add um elemento na lista atravez o modo FIFO
 	protected List<String> fila = new ArrayList<String>();
 	protected List<String> processosRetomados = new ArrayList<String>();
 	protected List<Integer> filaDuracao = new ArrayList<Integer>();
 
-	
 	public FachadaEscalonador(TipoEscalonador tipoEscalonador) {
 
-		if(tipoEscalonador == TipoEscalonador.Fifo) {
+		if (tipoEscalonador == TipoEscalonador.Fifo) {
 			this.quantum = 0;
 			this.tick = 0;
 			this.tipoEscalonador = tipoEscalonador;
 			this.listaProcessos = new LinkedList<String>();
 			this.processosBloqueados = new ArrayList<String>();
 		}
-		
+
 		if (tipoEscalonador == null)
-			throw new EscalonadorException();
-		else {
-		this.quantum = 3;
-		this.tick = 0;
-		this.tipoEscalonador = tipoEscalonador;
-		this.listaProcessos = new LinkedList<String>();
-		this.processosBloqueados = new ArrayList<String>();
+			throw new EscalonadorException(); 
+		if (tipoEscalonador == tipoEscalonador.Prioridade || tipoEscalonador == tipoEscalonador.MaisCurtoPrimeiro
+				|| tipoEscalonador == tipoEscalonador.RoundRobin) {
+			this.quantum = 3;
+			this.tick = 0;
+			this.tipoEscalonador = tipoEscalonador;
+			this.listaProcessos = new LinkedList<String>();
+			this.processosBloqueados = new ArrayList<String>();
 		}
 	}
 
@@ -177,8 +177,8 @@ public class FachadaEscalonador {
 					tempoFixo = tick + tempoRodando;
 
 			}
-		}	
-		
+		}
+
 	}
 
 	public void adicionarProcesso(String nomeProcesso) {
@@ -206,13 +206,14 @@ public class FachadaEscalonador {
 		if (tipoEscalonador == TipoEscalonador.RoundRobin || tipoEscalonador == TipoEscalonador.MaisCurtoPrimeiro) {
 			throw new EscalonadorException();
 
-		}if(listaProcessos.contains(nomeProcesso) || nomeProcesso == null) {
+		}
+		if (listaProcessos.contains(nomeProcesso) || nomeProcesso == null) {
 			throw new EscalonadorException();
 		}
-		if(prioridade > 3) {
+		if (prioridade > 3) {
 			throw new EscalonadorException();
 		}
-		
+
 		this.listaProcessos.add(nomeProcesso);
 
 	}
@@ -253,35 +254,35 @@ public class FachadaEscalonador {
 	}
 
 	public void adicionarProcessoTempoFixo(String nomeProcesso, int duracao) {
-		if (this.fila.contains(nomeProcesso) || nomeProcesso == null) 
+		if (this.fila.contains(nomeProcesso) || nomeProcesso == null)
 			throw new EscalonadorException();
 
-		if (duracao < 1) 
+		if (duracao < 1)
 			throw new EscalonadorException();
-		
+
 		int maisCurto = Integer.MAX_VALUE;
 
 		if (this.fila.size() == 0) {
-			
+
 			this.fila.add(nomeProcesso);
 			this.filaDuracao.add(duracao);
-			
+
 		} else {
 
 			int menorPosicao = 0;
 
 			this.fila.add(nomeProcesso);
 			this.filaDuracao.add(duracao);
-			
+
 			for (int i = 0; i < this.filaDuracao.size(); i++) {
-				
+
 				if (this.filaDuracao.get(i) < maisCurto) {
 					maisCurto = this.filaDuracao.get(i);
 					menorPosicao = i;
 				}
 			}
 			if (menorPosicao > 0) {
-				
+
 				String processoMenor = this.fila.remove(menorPosicao);
 				int processoMenorTempo = this.filaDuracao.remove(menorPosicao);
 				this.fila.add(0, processoMenor);
@@ -313,7 +314,7 @@ public class FachadaEscalonador {
 	public TipoEscalonador escalonadorMaisCurtoPrimeiro() {
 		return TipoEscalonador.MaisCurtoPrimeiro;
 	}
-	
+
 	public TipoEscalonador escalonadorFifo() {
 		return TipoEscalonador.Fifo;
 	}
